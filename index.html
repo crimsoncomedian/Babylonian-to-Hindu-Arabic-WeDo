@@ -1,0 +1,3065 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Babylonian to Hindu-Arabic · WeDo</title>
+
+  <style>
+    :root {
+      --page-bg: #f4f7fb;
+      --card: #ffffff;
+      --panel: #f8fafc;
+
+      --text: #172033;
+      --muted: #667085;
+
+      --border: #dbe2ea;
+      --border-dark: #cbd5e1;
+
+      --blue: #2563eb;
+      --blue-dark: #1d4ed8;
+      --blue-soft: #eff6ff;
+
+      --green: #166534;
+      --green-bg: #f0fdf4;
+      --green-border: #bbf7d0;
+
+      --red: #991b1b;
+      --red-bg: #fff7f7;
+      --red-border: #fecaca;
+
+      --shadow:
+        0 1px 2px rgba(16, 24, 40, 0.04),
+        0 4px 14px rgba(16, 24, 40, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      background: var(--page-bg);
+      color: var(--text);
+
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1050px, calc(100% - 28px));
+      margin: 28px auto;
+    }
+
+    .card {
+      background: var(--card);
+
+      border: 1px solid var(--border);
+      border-radius: 18px;
+
+      box-shadow: var(--shadow);
+
+      padding: 22px;
+    }
+
+    /* ==================================================
+       PROMPT
+       ================================================== */
+
+    .prompt {
+      text-align: center;
+
+      color: var(--muted);
+
+      font-size: 0.98rem;
+    }
+
+    .subprompt {
+      margin-top: 5px;
+
+      text-align: center;
+
+      color: var(--muted);
+
+      font-size: 0.84rem;
+    }
+
+    /* ==================================================
+       PROCESS BAR
+       ================================================== */
+
+    .process {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      gap: 7px;
+      flex-wrap: wrap;
+
+      margin: 18px 0 14px;
+    }
+
+    .process-step {
+      padding: 7px 11px;
+
+      border: 1px solid var(--border);
+      border-radius: 9px;
+
+      background: var(--card);
+      color: var(--muted);
+
+      font-size: 0.8rem;
+      font-weight: 750;
+    }
+
+    .process-step.current {
+      background: var(--blue-soft);
+
+      border-color: var(--blue);
+
+      color: var(--text);
+    }
+
+    .process-step.done {
+      color: var(--text);
+    }
+
+    .process-arrow {
+      color: var(--muted);
+
+      font-weight: 800;
+    }
+
+    /* ==================================================
+       PHASE BOX
+       ================================================== */
+
+    .phase {
+      margin-bottom: 14px;
+
+      padding: 11px 14px;
+
+      border-radius: 10px;
+
+      background: var(--panel);
+
+      text-align: center;
+
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    /* ==================================================
+       TABLE
+       ================================================== */
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .conversion-table {
+      width: 100%;
+      min-width: 650px;
+
+      border-collapse: separate;
+      border-spacing: 0;
+
+      table-layout: fixed;
+
+      border: 1px solid var(--border);
+      border-radius: 13px;
+
+      overflow: hidden;
+
+      background: var(--card);
+    }
+
+    .conversion-table td {
+      padding: 12px 9px;
+
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .conversion-table td:last-child {
+      border-right: none;
+    }
+
+    .conversion-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .row-label {
+      width: 150px;
+
+      background: var(--panel);
+
+      color: var(--muted);
+
+      font-size: 0.74rem;
+      font-weight: 800;
+
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .symbol-cell {
+      min-height: 98px;
+    }
+
+    .active-cell {
+      background: var(--blue-soft);
+
+      box-shadow:
+        inset 0 0 0 2px var(--blue);
+    }
+
+    .cell-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .empty-cell {
+      color: var(--muted);
+    }
+
+    .cell-input {
+      width: 100%;
+      max-width: 125px;
+      min-height: 43px;
+
+      padding: 6px 8px;
+
+      border: 1.5px solid var(--border-dark);
+      border-radius: 8px;
+
+      background: var(--card);
+      color: var(--text);
+
+      text-align: center;
+
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .cell-input:focus {
+      outline: none;
+
+      border-color: var(--blue);
+
+      box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .multiply-cell {
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .multiply-cell strong {
+      font-size: 1.1rem;
+    }
+
+    svg {
+      display: block;
+      overflow: visible;
+      margin: auto;
+    }
+
+    /* ==================================================
+       WORK AREA
+       ================================================== */
+
+    .work-card {
+      margin-top: 15px;
+
+      border: 1px solid var(--border);
+      border-radius: 12px;
+
+      overflow: hidden;
+    }
+
+    .work-heading {
+      padding: 10px 14px;
+
+      background: var(--panel);
+
+      color: var(--muted);
+
+      font-size: 0.78rem;
+      font-weight: 800;
+
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .work-body {
+      padding: 15px;
+    }
+
+    .question {
+      font-size: 1.05rem;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+
+    .help {
+      margin-top: 5px;
+
+      color: var(--muted);
+
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 8px;
+      flex-wrap: wrap;
+
+      margin-top: 12px;
+    }
+
+    /* ==================================================
+       BUTTONS
+       ================================================== */
+
+    .button {
+      min-height: 42px;
+
+      padding: 8px 14px;
+
+      border-radius: 9px;
+
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--blue);
+      color: white;
+
+      border: 1px solid var(--blue);
+    }
+
+    .primary:hover:not(:disabled) {
+      background: var(--blue-dark);
+    }
+
+    .secondary {
+      background: var(--card);
+      color: var(--text);
+
+      border: 1px solid var(--border);
+    }
+
+    .secondary:hover:not(:disabled) {
+      background: var(--panel);
+    }
+
+    .button:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+
+    /* ==================================================
+       FEEDBACK
+       ================================================== */
+
+    .feedback {
+      margin-top: 10px;
+
+      text-align: center;
+
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
+    .feedback.correct {
+      color: var(--green);
+    }
+
+    .feedback.incorrect {
+      color: var(--red);
+    }
+
+    /* ==================================================
+       FINAL ADDITION
+       ================================================== */
+
+    .sum-box {
+      margin-top: 14px;
+
+      padding: 16px;
+
+      border: 1px solid var(--border);
+      border-radius: 11px;
+
+      background: var(--blue-soft);
+
+      text-align: center;
+    }
+
+    .sum-expression {
+      font-size: 1.2rem;
+      font-weight: 800;
+      line-height: 1.6;
+    }
+
+    .final-answer {
+      margin: 7px 0 11px;
+
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    /* ==================================================
+       NAVIGATION
+       ================================================== */
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+
+      gap: 10px;
+      flex-wrap: wrap;
+
+      margin-top: 14px;
+    }
+
+    /* ==================================================
+       RESPONSIVE
+       ================================================== */
+
+    @media (max-width: 600px) {
+
+      .app {
+        width: min(100% - 18px, 1050px);
+        margin: 18px auto;
+      }
+
+      .card {
+        padding: 15px 12px;
+      }
+
+      .row-label {
+        width: 110px;
+      }
+
+      .conversion-table {
+        min-width: 560px;
+      }
+
+      .navigation {
+        justify-content: center;
+      }
+
+      .process-arrow {
+        display: none;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+<main class="app">
+
+  <section class="card">
+
+    <!-- ==================================================
+         INTRO
+         ================================================== -->
+
+    <div class="prompt">
+      Convert this Babylonian numeral to a Hindu-Arabic numeral.
+    </div>
+
+    <div class="subprompt">
+      Work through the same four steps each time.
+    </div>
+
+
+    <!-- ==================================================
+         PROCESS
+         ================================================== -->
+
+    <div
+      id="processBar"
+      class="process">
+    </div>
+
+
+    <div
+      id="phaseBox"
+      class="phase">
+    </div>
+
+
+    <!-- ==================================================
+         TABLE
+         ================================================== -->
+
+    <div class="table-wrap">
+
+      <table class="conversion-table">
+
+        <tbody id="conversionTable"></tbody>
+
+      </table>
+
+    </div>
+
+
+    <!-- ==================================================
+         WORK AREA
+         ================================================== -->
+
+    <div id="workArea"></div>
+
+
+    <!-- ==================================================
+         NAVIGATION
+         ================================================== -->
+
+    <div class="navigation">
+
+      <button
+        id="backButton"
+        class="button secondary"
+        type="button">
+        ← Back
+      </button>
+
+      <button
+        id="nextButton"
+        class="button secondary"
+        type="button">
+        Next →
+      </button>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+(() => {
+
+  /*
+    ==================================================
+    DOM
+    ==================================================
+  */
+
+  const processBar =
+    document.getElementById(
+      "processBar"
+    );
+
+
+  const phaseBox =
+    document.getElementById(
+      "phaseBox"
+    );
+
+
+  const conversionTable =
+    document.getElementById(
+      "conversionTable"
+    );
+
+
+  const workArea =
+    document.getElementById(
+      "workArea"
+    );
+
+
+  const backButton =
+    document.getElementById(
+      "backButton"
+    );
+
+
+  const nextButton =
+    document.getElementById(
+      "nextButton"
+    );
+
+
+  /*
+    ==================================================
+    STATE
+    ==================================================
+  */
+
+  let currentNumber =
+    1;
+
+
+  let digits =
+    [1];
+
+
+  let columns =
+    [];
+
+
+  let steps =
+    [];
+
+
+  let currentStepIndex =
+    0;
+
+
+  let highestCompletedIndex =
+    -1;
+
+
+  let previousNumber =
+    null;
+
+
+  /*
+    ==================================================
+    BABYLONIAN SYMBOLS
+    ==================================================
+  */
+
+  function drawOne(
+    x,
+    y,
+    scale = 1
+  ) {
+
+    return `
+      <g
+        transform="
+          translate(${x} ${y})
+          scale(${scale})
+        ">
+
+        <path
+          d="
+            M0 0
+            L16 0
+            L11 7
+            L9 26
+            L7 26
+            L5 7
+            Z
+          "
+          fill="currentColor">
+        </path>
+
+        <path
+          d="
+            M5 7
+            L11 7
+            L8 12
+            Z
+          "
+          fill="white">
+        </path>
+
+      </g>
+    `;
+
+  }
+
+
+  function drawTen(
+    x,
+    y,
+    scale = 1
+  ) {
+
+    return `
+      <g
+        transform="
+          translate(${x} ${y})
+          scale(${scale})
+        ">
+
+        <path
+          d="
+            M0 10
+            L17 0
+            L12 9
+            L17 19
+            Z
+          "
+          fill="currentColor">
+        </path>
+
+        <path
+          d="
+            M4 10
+            L12 5
+            L9 10
+            L12 15
+            Z
+          "
+          fill="white">
+        </path>
+
+      </g>
+    `;
+
+  }
+
+
+  /*
+    ==================================================
+    SYMBOL ARRANGEMENT
+    ==================================================
+  */
+
+  function getPositions(
+    count,
+    type
+  ) {
+
+    const positions =
+      [];
+
+
+    const columnGap =
+      type === "ten"
+        ? 22
+        : 18;
+
+
+    const rowGap =
+      type === "ten"
+        ? 22
+        : 29;
+
+
+    let remaining =
+      count;
+
+
+    let row =
+      0;
+
+
+    while (
+      remaining >
+      0
+    ) {
+
+      const inRow =
+        Math.min(
+          3,
+          remaining
+        );
+
+
+      const width =
+        (
+          inRow -
+          1
+        ) *
+        columnGap;
+
+
+      const startX =
+        -width /
+        2;
+
+
+      for (
+        let column = 0;
+        column < inRow;
+        column++
+      ) {
+
+        positions.push({
+
+          x:
+            startX +
+            column *
+            columnGap,
+
+          y:
+            row *
+            rowGap
+
+        });
+
+      }
+
+
+      remaining -=
+        inRow;
+
+
+      row++;
+
+    }
+
+
+    return positions;
+
+  }
+
+
+  function createSymbolGroup(
+    count,
+    type
+  ) {
+
+    if (
+      count <=
+      0
+    ) {
+
+      return "";
+
+    }
+
+
+    const positions =
+      getPositions(
+        count,
+        type
+      );
+
+
+    const rows =
+      Math.ceil(
+        count /
+        3
+      );
+
+
+    const width =
+      type === "ten"
+        ? 78
+        : 66;
+
+
+    const height =
+      type === "ten"
+
+        ? Math.max(
+            24,
+            rows *
+              22 +
+              10
+          )
+
+        : Math.max(
+            32,
+            rows *
+              29 +
+              8
+          );
+
+
+    const center =
+      width /
+      2;
+
+
+    let marks =
+      "";
+
+
+    positions.forEach(
+      position => {
+
+        if (
+          type ===
+          "one"
+        ) {
+
+          marks +=
+            drawOne(
+              center +
+                position.x -
+                8,
+
+              4 +
+                position.y,
+
+              0.9
+            );
+
+        }
+
+        else {
+
+          marks +=
+            drawTen(
+              center +
+                position.x -
+                8,
+
+              4 +
+                position.y,
+
+              0.9
+            );
+
+        }
+
+      }
+    );
+
+
+    return `
+      <svg
+        width="${width}"
+        height="${height}"
+        viewBox="0 0 ${width} ${height}"
+        style="color: var(--text)"
+        aria-hidden="true">
+
+        ${marks}
+
+      </svg>
+    `;
+
+  }
+
+
+  function renderDigit(
+    value
+  ) {
+
+    const tens =
+      Math.floor(
+        value /
+        10
+      );
+
+
+    const ones =
+      value %
+      10;
+
+
+    return `
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:2px;
+        ">
+
+        ${
+          tens
+            ? createSymbolGroup(
+                tens,
+                "ten"
+              )
+            : ""
+        }
+
+        ${
+          ones
+            ? createSymbolGroup(
+                ones,
+                "one"
+              )
+            : ""
+        }
+
+      </div>
+    `;
+
+  }
+
+
+  /*
+    ==================================================
+    BASE 60
+    ==================================================
+  */
+
+  function toBase60(
+    value
+  ) {
+
+    const result =
+      [];
+
+
+    let number =
+      value;
+
+
+    while (
+      number >
+      0
+    ) {
+
+      result.unshift(
+        number %
+        60
+      );
+
+
+      number =
+        Math.floor(
+          number /
+          60
+        );
+
+    }
+
+
+    return result.length
+      ? result
+      : [0];
+
+  }
+
+
+  /*
+    ==================================================
+    RANDOM NUMBER GENERATION
+    ==================================================
+
+    About 80% below 1000.
+
+    ==================================================
+  */
+
+  function weightedRandomNumber() {
+
+    const random =
+      Math.random();
+
+
+    if (
+      random <
+      0.80
+    ) {
+
+      return (
+        1 +
+        Math.floor(
+          Math.random() *
+          999
+        )
+      );
+
+    }
+
+
+    if (
+      random <
+      0.96
+    ) {
+
+      return (
+        1000 +
+        Math.floor(
+          Math.random() *
+          2600
+        )
+      );
+
+    }
+
+
+    return (
+      3600 +
+      Math.floor(
+        Math.random() *
+        6401
+      )
+    );
+
+  }
+
+
+  /*
+    ==================================================
+    GENERATE PROBLEM
+    ==================================================
+
+    Zero base-60 places are avoided for
+    this activity so students do not need
+    the Babylonian placeholder yet.
+
+    ==================================================
+  */
+
+  function generateProblem() {
+
+    let number;
+
+    let base60Digits;
+
+
+    do {
+
+      number =
+        weightedRandomNumber();
+
+
+      if (
+        number >
+        10000
+      ) {
+
+        number =
+          10000;
+
+      }
+
+
+      base60Digits =
+        toBase60(
+          number
+        );
+
+    }
+
+    while (
+
+      base60Digits.some(
+        value =>
+          value ===
+          0
+      )
+
+      ||
+
+      number ===
+        previousNumber
+
+    );
+
+
+    currentNumber =
+      number;
+
+
+    previousNumber =
+      number;
+
+
+    digits =
+      base60Digits;
+
+
+    columns =
+      digits.map(
+        (
+          digit,
+          index
+        ) => {
+
+          const power =
+            digits.length -
+            1 -
+            index;
+
+
+          const placeValue =
+            Math.pow(
+              60,
+              power
+            );
+
+
+          return {
+
+            symbolValue:
+              digit,
+
+            placeValue:
+              placeValue,
+
+            product:
+              digit *
+              placeValue,
+
+            symbolDone:
+              false,
+
+            placeDone:
+              false,
+
+            productDone:
+              false
+
+          };
+
+        }
+      );
+
+  }
+
+
+  /*
+    ==================================================
+    STEPS
+    ==================================================
+
+    1. Symbol Value
+    2. Place Value
+    3. Multiply
+    4. Add
+
+    ==================================================
+  */
+
+  function buildSteps() {
+
+    steps =
+      [];
+
+
+    /*
+      Step 1:
+      all symbol values at once
+    */
+
+    steps.push({
+
+      type:
+        "symbols",
+
+      completed:
+        false,
+
+      skipped:
+        false
+
+    });
+
+
+    /*
+      Step 2:
+      all place values at once
+    */
+
+    steps.push({
+
+      type:
+        "places",
+
+      completed:
+        false,
+
+      skipped:
+        false
+
+    });
+
+
+    /*
+      Step 3:
+      multiply one column at a time
+    */
+
+    columns.forEach(
+      (
+        column,
+        index
+      ) => {
+
+        steps.push({
+
+          type:
+            "product",
+
+          column:
+            index,
+
+          answer:
+            String(
+              column.product
+            ),
+
+          completed:
+            false,
+
+          skipped:
+            false
+
+        });
+
+      }
+    );
+
+
+    /*
+      Step 4:
+      add everything
+    */
+
+    steps.push({
+
+      type:
+        "total",
+
+      answer:
+        String(
+          currentNumber
+        ),
+
+      completed:
+        false,
+
+      skipped:
+        false
+
+    });
+
+  }
+
+
+  /*
+    ==================================================
+    COMPLETE STEP
+    ==================================================
+  */
+
+  function completeStep(
+    step,
+    skipped
+  ) {
+
+    step.completed =
+      true;
+
+
+    step.skipped =
+      skipped;
+
+
+    highestCompletedIndex =
+      Math.max(
+        highestCompletedIndex,
+        currentStepIndex
+      );
+
+
+    if (
+      step.type ===
+      "symbols"
+    ) {
+
+      columns.forEach(
+        column => {
+
+          column.symbolDone =
+            true;
+
+        }
+      );
+
+    }
+
+
+    if (
+      step.type ===
+      "places"
+    ) {
+
+      columns.forEach(
+        column => {
+
+          column.placeDone =
+            true;
+
+        }
+      );
+
+    }
+
+
+    if (
+      step.type ===
+      "product"
+    ) {
+
+      columns[
+        step.column
+      ].productDone =
+        true;
+
+    }
+
+
+    render();
+
+  }
+
+
+  /*
+    ==================================================
+    PROCESS BAR
+    ==================================================
+  */
+
+  function getPhaseNumber(
+    step
+  ) {
+
+    if (
+      step.type ===
+      "symbols"
+    ) {
+
+      return 1;
+
+    }
+
+
+    if (
+      step.type ===
+      "places"
+    ) {
+
+      return 2;
+
+    }
+
+
+    if (
+      step.type ===
+      "product"
+    ) {
+
+      return 3;
+
+    }
+
+
+    return 4;
+
+  }
+
+
+  function renderProcessBar() {
+
+    const step =
+      steps[
+        currentStepIndex
+      ];
+
+
+    const currentPhase =
+      getPhaseNumber(
+        step
+      );
+
+
+    const names =
+      [
+        "Symbol Value",
+        "Place Value",
+        "Multiply",
+        "Add"
+      ];
+
+
+    processBar.innerHTML =
+      names
+        .map(
+          (
+            name,
+            index
+          ) => {
+
+            const number =
+              index +
+              1;
+
+
+            let className =
+              "";
+
+
+            if (
+              number ===
+              currentPhase
+            ) {
+
+              className =
+                "current";
+
+            }
+
+            else if (
+              number <
+              currentPhase
+            ) {
+
+              className =
+                "done";
+
+            }
+
+
+            return `
+              ${
+                index
+                  ? '<span class="process-arrow">→</span>'
+                  : ""
+              }
+
+              <span
+                class="process-step ${className}">
+
+                ${number}.
+                ${name}
+
+              </span>
+            `;
+
+          }
+        )
+        .join("");
+
+  }
+
+
+  /*
+    ==================================================
+    TABLE
+    ==================================================
+  */
+
+  function renderTable() {
+
+    const step =
+      steps[
+        currentStepIndex
+      ];
+
+
+    /*
+      --------------------------------
+      BABYLONIAN SYMBOL ROW
+      --------------------------------
+    */
+
+    let symbolRow =
+      `
+        <tr>
+
+          <td class="row-label">
+            Babylonian Symbols
+          </td>
+      `;
+
+
+    columns.forEach(
+      column => {
+
+        symbolRow +=
+          `
+            <td class="symbol-cell">
+
+              ${renderDigit(
+                column.symbolValue
+              )}
+
+            </td>
+          `;
+
+      }
+    );
+
+
+    symbolRow +=
+      "</tr>";
+
+
+    /*
+      --------------------------------
+      SYMBOL VALUE ROW
+      --------------------------------
+    */
+
+    let symbolValueRow =
+      `
+        <tr>
+
+          <td class="row-label">
+            1. Symbol Value
+          </td>
+      `;
+
+
+    columns.forEach(
+      (
+        column,
+        index
+      ) => {
+
+        if (
+          step.type ===
+            "symbols" &&
+          !step.completed
+        ) {
+
+          symbolValueRow +=
+            `
+              <td class="active-cell">
+
+                <input
+                  class="cell-input symbol-input"
+                  data-index="${index}"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off">
+
+              </td>
+            `;
+
+        }
+
+        else {
+
+          symbolValueRow +=
+            `
+              <td>
+
+                ${
+                  column.symbolDone
+
+                    ? `
+                        <span class="cell-value">
+                          ${column.symbolValue}
+                        </span>
+                      `
+
+                    : `
+                        <span class="empty-cell">
+                          —
+                        </span>
+                      `
+                }
+
+              </td>
+            `;
+
+        }
+
+      }
+    );
+
+
+    symbolValueRow +=
+      "</tr>";
+
+
+    /*
+      --------------------------------
+      PLACE VALUE ROW
+      --------------------------------
+    */
+
+    let placeValueRow =
+      `
+        <tr>
+
+          <td class="row-label">
+            2. Place Value
+          </td>
+      `;
+
+
+    columns.forEach(
+      (
+        column,
+        index
+      ) => {
+
+        if (
+          step.type ===
+            "places" &&
+          !step.completed
+        ) {
+
+          placeValueRow +=
+            `
+              <td class="active-cell">
+
+                <input
+                  class="cell-input place-input"
+                  data-index="${index}"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off">
+
+              </td>
+            `;
+
+        }
+
+        else {
+
+          placeValueRow +=
+            `
+              <td>
+
+                ${
+                  column.placeDone
+
+                    ? `
+                        <span class="cell-value">
+
+                          ${column.placeValue.toLocaleString(
+                            "en-US"
+                          )}
+
+                        </span>
+                      `
+
+                    : `
+                        <span class="empty-cell">
+                          —
+                        </span>
+                      `
+                }
+
+              </td>
+            `;
+
+        }
+
+      }
+    );
+
+
+    placeValueRow +=
+      "</tr>";
+
+
+    /*
+      --------------------------------
+      MULTIPLY ROW
+      --------------------------------
+    */
+
+    let multiplyRow =
+      `
+        <tr>
+
+          <td class="row-label">
+            3. Multiply
+          </td>
+      `;
+
+
+    columns.forEach(
+      (
+        column,
+        index
+      ) => {
+
+        const active =
+          step.type ===
+            "product" &&
+          step.column ===
+            index;
+
+
+        if (
+          active &&
+          !step.completed
+        ) {
+
+          multiplyRow +=
+            `
+              <td class="active-cell">
+
+                <div class="multiply-cell">
+
+                  <strong>
+                    ${column.symbolValue}
+                  </strong>
+
+                  ×
+
+                  <strong>
+                    ${column.placeValue.toLocaleString(
+                      "en-US"
+                    )}
+                  </strong>
+
+                  =
+
+                </div>
+
+                <input
+                  id="activeCellInput"
+                  class="cell-input"
+                  type="text"
+                  inputmode="numeric"
+                  autocomplete="off">
+
+              </td>
+            `;
+
+        }
+
+        else if (
+          column.productDone
+        ) {
+
+          multiplyRow +=
+            `
+              <td>
+
+                <div class="multiply-cell">
+
+                  ${column.symbolValue}
+
+                  ×
+
+                  ${column.placeValue.toLocaleString(
+                    "en-US"
+                  )}
+
+                  =
+
+                  <strong>
+                    ${column.product.toLocaleString(
+                      "en-US"
+                    )}
+                  </strong>
+
+                </div>
+
+              </td>
+            `;
+
+        }
+
+        else if (
+          column.symbolDone &&
+          column.placeDone
+        ) {
+
+          multiplyRow +=
+            `
+              <td>
+
+                <div class="multiply-cell">
+
+                  ${column.symbolValue}
+
+                  ×
+
+                  ${column.placeValue.toLocaleString(
+                    "en-US"
+                  )}
+
+                  =
+
+                  <span class="empty-cell">
+                    ?
+                  </span>
+
+                </div>
+
+              </td>
+            `;
+
+        }
+
+        else {
+
+          multiplyRow +=
+            `
+              <td>
+
+                <span class="empty-cell">
+                  —
+                </span>
+
+              </td>
+            `;
+
+        }
+
+      }
+    );
+
+
+    multiplyRow +=
+      "</tr>";
+
+
+    conversionTable.innerHTML =
+      symbolRow +
+      symbolValueRow +
+      placeValueRow +
+      multiplyRow;
+
+  }
+
+
+  /*
+    ==================================================
+    WORK AREA
+    ==================================================
+  */
+
+  function renderWorkArea() {
+
+    const step =
+      steps[
+        currentStepIndex
+      ];
+
+
+    /*
+      ======================================
+      STEP 1
+      SYMBOL VALUES
+      ======================================
+    */
+
+    if (
+      step.type ===
+      "symbols"
+    ) {
+
+      phaseBox.innerHTML =
+        `
+          <strong>
+            Step 1:
+          </strong>
+
+          Read each Babylonian group and
+          determine its symbol value.
+        `;
+
+
+      if (
+        step.completed
+      ) {
+
+        workArea.innerHTML =
+          `
+            <div class="work-card">
+
+              <div class="work-heading">
+                Step 1 · Symbol Value
+              </div>
+
+              <div class="work-body">
+
+                <div class="feedback correct">
+
+                  ${
+                    step.skipped
+                      ? "Revealed:"
+                      : "✓ Correct."
+                  }
+
+                  ${columns
+                    .map(
+                      column =>
+                        column.symbolValue
+                    )
+                    .join(", ")}
+
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+      }
+
+      else {
+
+        workArea.innerHTML =
+          `
+            <div class="work-card">
+
+              <div class="work-heading">
+                Step 1 · Symbol Value
+              </div>
+
+              <div class="work-body">
+
+                <div class="question">
+
+                  What number from
+                  1 to 59 does each
+                  Babylonian group represent?
+
+                </div>
+
+                <div class="help">
+
+                  Count the
+                  <strong>10-symbols</strong>
+                  and
+                  <strong>1-symbols</strong>
+                  in each column.
+
+                  Fill in every box in the
+                  <strong>Symbol Value</strong>
+                  row.
+
+                </div>
+
+                <div class="actions">
+
+                  <button
+                    id="checkRowButton"
+                    class="button primary"
+                    type="button">
+                    Check Symbol Values
+                  </button>
+
+                  <button
+                    id="skipButton"
+                    class="button secondary"
+                    type="button">
+                    Skip
+                  </button>
+
+                </div>
+
+                <div
+                  id="feedbackMessage"
+                  class="feedback">
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+      }
+
+
+      return;
+
+    }
+
+
+    /*
+      ======================================
+      STEP 2
+      PLACE VALUES
+      ======================================
+    */
+
+    if (
+      step.type ===
+      "places"
+    ) {
+
+      phaseBox.innerHTML =
+        `
+          <strong>
+            Step 2:
+          </strong>
+
+          Identify the base-60 place value
+          of each column.
+        `;
+
+
+      if (
+        step.completed
+      ) {
+
+        workArea.innerHTML =
+          `
+            <div class="work-card">
+
+              <div class="work-heading">
+                Step 2 · Place Value
+              </div>
+
+              <div class="work-body">
+
+                <div class="feedback correct">
+
+                  ${
+                    step.skipped
+                      ? "Revealed:"
+                      : "✓ Correct."
+                  }
+
+                  ${columns
+                    .map(
+                      column =>
+                        column.placeValue
+                          .toLocaleString(
+                            "en-US"
+                          )
+                    )
+                    .join(", ")}
+
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+      }
+
+      else {
+
+        workArea.innerHTML =
+          `
+            <div class="work-card">
+
+              <div class="work-heading">
+                Step 2 · Place Value
+              </div>
+
+              <div class="work-body">
+
+                <div class="question">
+
+                  Fill in the base-60
+                  place value for each column.
+
+                </div>
+
+                <div class="help">
+
+                  The
+                  <strong>smallest place value is 1</strong>.
+
+                  Moving one place to the left
+                  multiplies the place value
+                  by
+
+                  <strong>
+                    60
+                  </strong>.
+
+                </div>
+
+                <div class="actions">
+
+                  <button
+                    id="checkRowButton"
+                    class="button primary"
+                    type="button">
+                    Check Place Values
+                  </button>
+
+                  <button
+                    id="skipButton"
+                    class="button secondary"
+                    type="button">
+                    Skip
+                  </button>
+
+                </div>
+
+                <div
+                  id="feedbackMessage"
+                  class="feedback">
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+      }
+
+
+      return;
+
+    }
+
+
+    /*
+      ======================================
+      STEP 3
+      MULTIPLY
+      ======================================
+    */
+
+    if (
+      step.type ===
+      "product"
+    ) {
+
+      const column =
+        columns[
+          step.column
+        ];
+
+
+      phaseBox.innerHTML =
+        `
+          <strong>
+            Step 3:
+          </strong>
+
+          Multiply each symbol value
+          by its place value.
+        `;
+
+
+      if (
+        step.completed
+      ) {
+
+        workArea.innerHTML =
+          `
+            <div class="work-card">
+
+              <div class="work-heading">
+                Step 3 · Multiply
+              </div>
+
+              <div class="work-body">
+
+                <div class="question">
+
+                  ${column.symbolValue}
+                  ×
+                  ${column.placeValue.toLocaleString(
+                    "en-US"
+                  )}
+
+                </div>
+
+                <div class="feedback correct">
+
+                  ${
+                    step.skipped
+                      ? "Revealed:"
+                      : "✓ Correct."
+                  }
+
+                  <strong>
+
+                    ${column.product.toLocaleString(
+                      "en-US"
+                    )}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+      }
+
+      else {
+
+        workArea.innerHTML =
+          `
+            <div class="work-card">
+
+              <div class="work-heading">
+                Step 3 · Multiply
+              </div>
+
+              <div class="work-body">
+
+                <div class="question">
+
+                  Multiply the two numbers
+                  in this column:
+
+                  <strong>
+
+                    ${column.symbolValue}
+                    ×
+                    ${column.placeValue.toLocaleString(
+                      "en-US"
+                    )}
+
+                  </strong>.
+
+                </div>
+
+                <div class="help">
+
+                  Enter the product directly
+                  in the highlighted table cell.
+
+                </div>
+
+                <div class="actions">
+
+                  <button
+                    id="checkButton"
+                    class="button primary"
+                    type="button">
+                    Check
+                  </button>
+
+                  <button
+                    id="skipButton"
+                    class="button secondary"
+                    type="button">
+                    Skip
+                  </button>
+
+                </div>
+
+                <div
+                  id="feedbackMessage"
+                  class="feedback">
+                </div>
+
+              </div>
+
+            </div>
+          `;
+
+      }
+
+
+      return;
+
+    }
+
+
+    /*
+      ======================================
+      STEP 4
+      ADD
+      ======================================
+    */
+
+    phaseBox.innerHTML =
+      `
+        <strong>
+          Step 4:
+        </strong>
+
+        Add the products to get the
+        Hindu-Arabic numeral.
+      `;
+
+
+    const sumExpression =
+      columns
+        .map(
+          column =>
+            column.product
+              .toLocaleString(
+                "en-US"
+              )
+        )
+        .join(" + ");
+
+
+    if (
+      step.completed
+    ) {
+
+      workArea.innerHTML =
+        `
+          <div class="sum-box">
+
+            <div>
+              Completed Conversion
+            </div>
+
+            <div class="sum-expression">
+
+              ${sumExpression}
+
+            </div>
+
+            <div class="final-answer">
+
+              ${currentNumber.toLocaleString(
+                "en-US"
+              )}
+
+            </div>
+
+            <button
+              id="anotherButton"
+              class="button primary"
+              type="button">
+              Try Another Problem
+            </button>
+
+          </div>
+        `;
+
+    }
+
+    else {
+
+      workArea.innerHTML =
+        `
+          <div class="work-card">
+
+            <div class="work-heading">
+              Step 4 · Add
+            </div>
+
+            <div class="work-body">
+
+              <div class="question">
+
+                Add the products
+                from the last row.
+
+              </div>
+
+              <div class="sum-box">
+
+                <div class="sum-expression">
+
+                  ${sumExpression}
+                  = ?
+
+                </div>
+
+                <div class="actions">
+
+                  <input
+                    id="finalInput"
+                    class="cell-input"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off">
+
+                  <button
+                    id="checkButton"
+                    class="button primary"
+                    type="button">
+                    Check
+                  </button>
+
+                  <button
+                    id="skipButton"
+                    class="button secondary"
+                    type="button">
+                    Skip
+                  </button>
+
+                </div>
+
+                <div
+                  id="feedbackMessage"
+                  class="feedback">
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+        `;
+
+    }
+
+  }
+
+
+  /*
+    ==================================================
+    CHECK WHOLE ROW
+    ==================================================
+  */
+
+  function checkWholeRow(
+    step,
+    selector,
+    correctAnswers
+  ) {
+
+    const feedback =
+      document.getElementById(
+        "feedbackMessage"
+      );
+
+
+    const inputs =
+      [
+        ...document.querySelectorAll(
+          selector
+        )
+      ];
+
+
+    const answers =
+      inputs.map(
+        input =>
+          input.value
+            .trim()
+            .replace(
+              /^0+(?=\d)/,
+              ""
+            )
+      );
+
+
+    if (
+      answers.some(
+        answer =>
+          answer ===
+          ""
+      )
+    ) {
+
+      feedback.className =
+        "feedback incorrect";
+
+
+      feedback.textContent =
+        "Fill in all of the boxes before checking.";
+
+
+      return;
+
+    }
+
+
+    const correct =
+      answers.every(
+        (
+          answer,
+          index
+        ) =>
+          answer ===
+          String(
+            correctAnswers[
+              index
+            ]
+          )
+      );
+
+
+    if (
+      correct
+    ) {
+
+      completeStep(
+        step,
+        false
+      );
+
+    }
+
+    else {
+
+      feedback.className =
+        "feedback incorrect";
+
+
+      if (
+        step.type ===
+        "symbols"
+      ) {
+
+        feedback.textContent =
+          "Not quite. Count the tens symbols and ones symbols in each group.";
+
+      }
+
+      else {
+
+        feedback.textContent =
+          "Not quite. Remember that each place is 60 times the place to its right.";
+
+      }
+
+    }
+
+  }
+
+
+  /*
+    ==================================================
+    EVENTS
+    ==================================================
+  */
+
+  function attachEvents() {
+
+    const step =
+      steps[
+        currentStepIndex
+      ];
+
+
+    const rowCheckButton =
+      document.getElementById(
+        "checkRowButton"
+      );
+
+
+    const checkButton =
+      document.getElementById(
+        "checkButton"
+      );
+
+
+    const skipButton =
+      document.getElementById(
+        "skipButton"
+      );
+
+
+    const activeCellInput =
+      document.getElementById(
+        "activeCellInput"
+      );
+
+
+    const finalInput =
+      document.getElementById(
+        "finalInput"
+      );
+
+
+    const feedback =
+      document.getElementById(
+        "feedbackMessage"
+      );
+
+
+    const anotherButton =
+      document.getElementById(
+        "anotherButton"
+      );
+
+
+    /*
+      --------------------------------
+      ROW CHECK
+      --------------------------------
+    */
+
+    if (
+      rowCheckButton
+    ) {
+
+      if (
+        step.type ===
+        "symbols"
+      ) {
+
+        const inputs =
+          [
+            ...document.querySelectorAll(
+              ".symbol-input"
+            )
+          ];
+
+
+        rowCheckButton.addEventListener(
+          "click",
+
+          function () {
+
+            checkWholeRow(
+              step,
+              ".symbol-input",
+              columns.map(
+                column =>
+                  column.symbolValue
+              )
+            );
+
+          }
+
+        );
+
+
+        inputs[0]?.focus();
+
+      }
+
+      else {
+
+        const inputs =
+          [
+            ...document.querySelectorAll(
+              ".place-input"
+            )
+          ];
+
+
+        rowCheckButton.addEventListener(
+          "click",
+
+          function () {
+
+            checkWholeRow(
+              step,
+              ".place-input",
+              columns.map(
+                column =>
+                  column.placeValue
+              )
+            );
+
+          }
+
+        );
+
+
+        inputs[0]?.focus();
+
+      }
+
+    }
+
+
+    /*
+      --------------------------------
+      SINGLE ANSWER CHECK
+      --------------------------------
+    */
+
+    if (
+      checkButton
+    ) {
+
+      const activeInput =
+        activeCellInput ||
+        finalInput;
+
+
+      checkButton.addEventListener(
+        "click",
+
+        function () {
+
+          const answer =
+            (
+              activeInput?.value ||
+              ""
+            )
+              .trim()
+              .replace(
+                /^0+(?=\d)/,
+                ""
+              );
+
+
+          if (
+            answer ===
+            ""
+          ) {
+
+            feedback.className =
+              "feedback incorrect";
+
+
+            feedback.textContent =
+              "Enter an answer or choose Skip.";
+
+
+            return;
+
+          }
+
+
+          if (
+            answer ===
+            step.answer
+          ) {
+
+            completeStep(
+              step,
+              false
+            );
+
+          }
+
+          else {
+
+            feedback.className =
+              "feedback incorrect";
+
+
+            feedback.textContent =
+              "Not quite. Try again or skip this step.";
+
+          }
+
+        }
+
+      );
+
+
+      activeInput?.addEventListener(
+        "keydown",
+
+        function (
+          event
+        ) {
+
+          if (
+            event.key ===
+            "Enter"
+          ) {
+
+            event.preventDefault();
+
+            checkButton.click();
+
+          }
+
+        }
+
+      );
+
+
+      activeInput?.focus();
+
+    }
+
+
+    /*
+      --------------------------------
+      SKIP
+      --------------------------------
+    */
+
+    if (
+      skipButton
+    ) {
+
+      skipButton.addEventListener(
+        "click",
+
+        function () {
+
+          completeStep(
+            step,
+            true
+          );
+
+        }
+
+      );
+
+    }
+
+
+    /*
+      --------------------------------
+      ANOTHER PROBLEM
+      --------------------------------
+    */
+
+    if (
+      anotherButton
+    ) {
+
+      anotherButton.addEventListener(
+        "click",
+        newProblem
+      );
+
+    }
+
+  }
+
+
+  /*
+    ==================================================
+    NAVIGATION
+    ==================================================
+  */
+
+  function renderNavigation() {
+
+    const step =
+      steps[
+        currentStepIndex
+      ];
+
+
+    backButton.disabled =
+      currentStepIndex ===
+      0;
+
+
+    nextButton.disabled =
+      currentStepIndex ===
+        steps.length -
+        1
+
+      ||
+
+      !(
+        step.completed
+
+        ||
+
+        currentStepIndex <
+          highestCompletedIndex
+      );
+
+  }
+
+
+  backButton.addEventListener(
+    "click",
+
+    function () {
+
+      if (
+        currentStepIndex >
+        0
+      ) {
+
+        currentStepIndex--;
+
+        render();
+
+      }
+
+    }
+
+  );
+
+
+  nextButton.addEventListener(
+    "click",
+
+    function () {
+
+      const step =
+        steps[
+          currentStepIndex
+        ];
+
+
+      if (
+
+        currentStepIndex <
+          steps.length -
+          1
+
+        &&
+
+        (
+          step.completed
+
+          ||
+
+          currentStepIndex <
+            highestCompletedIndex
+        )
+
+      ) {
+
+        currentStepIndex++;
+
+        render();
+
+      }
+
+    }
+
+  );
+
+
+  /*
+    ==================================================
+    RENDER
+    ==================================================
+  */
+
+  function render() {
+
+    renderProcessBar();
+
+    renderTable();
+
+    renderWorkArea();
+
+    renderNavigation();
+
+    attachEvents();
+
+  }
+
+
+  /*
+    ==================================================
+    NEW PROBLEM
+    ==================================================
+  */
+
+  function newProblem() {
+
+    generateProblem();
+
+    buildSteps();
+
+
+    currentStepIndex =
+      0;
+
+
+    highestCompletedIndex =
+      -1;
+
+
+    render();
+
+  }
+
+
+  /*
+    ==================================================
+    START
+    ==================================================
+  */
+
+  newProblem();
+
+})();
+</script>
+
+</body>
+</html>
